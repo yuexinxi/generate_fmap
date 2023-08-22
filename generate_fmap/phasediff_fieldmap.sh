@@ -105,8 +105,6 @@ while [ $# -ge 1 ]; do
     esac
 done
 
-cp -r 
-
 echo " "
 echo "++++ ${bold}BRAIN-TO Fieldmap Processing${normal} ++++"
 echo " FSL version $Fversion "
@@ -133,19 +131,19 @@ echo -ne " - Creating brain mask ...\r "
 mri_synthstrip \
     -i ${mag1}.nii.gz \
     -o ${mag1}_brain.nii.gz \
-    -m brainmask.nii.gz
+    -m brain_mask.nii.gz
 
 echo " - Creating brain mask ... Done."
 
 echo -ne " - Creating stripped magnitude and phase images ...\r "
 fslmaths \
     $mag2 \
-    -mul brainmask \
+    -mul brain_mask \
     ${mag2}_brain
 
 fslmaths \
     ${phs} \
-    -mul brainmask \
+    -mul brain_mask \
     ${phs}_brain
 
 echo " - Creating stripped magnitude and phase images ... Done."
@@ -194,6 +192,9 @@ echo "$json_string" > "${json_write}"
 
 echo -ne " - Writing in json ... Done."
 
+# Remove original files and temporary files
+rm ${mag1}.nii.gz ${mag1}.json ${mag2}.nii.gz ${mag2}.json ${phs}.nii.gz ${phs}.json
+rm brain_mask.nii.gz ${mag1}_brain.nii.gz ${mag2}_brain.nii.gz ${phs}_brain.nii.gz
 
 echo " "
 echo " ++ Output "

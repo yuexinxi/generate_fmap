@@ -140,7 +140,6 @@ phs2=${phs2/'data'/'out'}
 # Default output name
 out=${phs1/phase1/fieldmap}
 
-
 echo -ne " - Convert phase to radians ...\r "
 fslmaths \
     $phs1 \
@@ -160,7 +159,7 @@ echo " - Convert phase to radians ... Done."
 echo -ne " - Creating brain mask ...\r "
 mri_synthstrip \
     -i ${mag1}.nii.gz \
-    -m ${mag1}_brain_mask.nii.gz &>/dev/null
+    -m brain_mask.nii.gz
 
 echo " - Creating brain mask ... Done."
 
@@ -168,12 +167,12 @@ echo -ne " - Unwrapping phase images ...\r "
 prelude \
     -a $mag1 \
     -p ${phs1}_in_Radians \
-    -m ${mag1}_brain_mask \
+    -m brain_mask \
     -o ${phs1}_in_Radians_Unwrapped
 prelude \
     -a $mag2 \
     -p ${phs2}_in_Radians \
-    -m ${mag1}_brain_mask \
+    -m brain_mask \
     -o ${phs2}_in_Radians_Unwrapped
 echo " - Unwrapping phase images ... Done."
 
@@ -221,6 +220,10 @@ json_string=$(
 echo "$json_string" > "${json_write}"
 
 echo -ne " - Writing in json ... Done."
+
+# Remove original files and temporary files
+rm ${mag1}.nii.gz ${mag1}.json ${mag2}.nii.gz ${mag2}.json ${phs1}.nii.gz ${phs1}.json ${phs2}.nii.gz ${phs2}.json
+rm brain_mask.nii.gz ${phs1}_in_Radians.nii.gz ${phs1}_in_Radians_Unwrapped.nii.gz ${phs2}_in_Radians.nii.gz ${phs2}_in_Radians_Unwrapped.nii.gz
 
 echo " "
 echo " ++ Output "
